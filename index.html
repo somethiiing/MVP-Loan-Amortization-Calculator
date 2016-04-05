@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Loan Calculator</title>
+    <!-- load Angular from CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="app.js"></script>
+  </head>
+  <body ng-app="app" ng-controller="loanInfoCtrl">
+    <h1>Loan Calculator</h1>
+      <form novalidate class="simple-form">
+        Loan Amount: <input type="text" ng-model="loan.principal" placeholder="Loan Amount here!"> $ <br />
+        Interest Rate: <input type="text" ng-model="loan.interest" placeholder="Interest Rate here!"> % per year<br />
+        Loan Term: <input type="text" ng-model="loan.term" placeholder="Loan Term here!"> months <br />
+
+        <br> <br>
+
+        Extra Payment Per Month: <input type="text" ng-model="loan.extra" placeholder="Extra Payment here!"> $ <br />
+
+        <input type="button" ng-click="reset()" value="Reset" />
+        <input type="submit" ng-submit="update(loanInfo)" value="Calculate!" />
+
+    <hr>
+    <pre>
+      <div>
+
+        {{ loan | json }}
+        {{ master | json }}
+
+      </div>
+    </pre>
+  </body>
+</html>
+

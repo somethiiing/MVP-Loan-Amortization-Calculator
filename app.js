@@ -151,6 +151,7 @@ angular.module('app', [])
   $scope.amSched =[];
 
   $scope.reset = function () {
+
     $scope.loan.principal = '0';
     $scope.loan.interest = '0';
     $scope.loan.term = '0';
@@ -187,8 +188,9 @@ angular.module('app', [])
   };
 
   $scope.display = function(loanInfo) {
+
     if(loanInfo.extra === undefined){
-      extra = 0;
+      loanInfo.extra = 0;
     }
 
     var displayLoan = {};
@@ -200,15 +202,12 @@ angular.module('app', [])
       displayLoan[key] = loanInfo[key];
     }
 
-
-    
     $scope.displayLoan = displayLoan;
     $scope.displaySched = displayLoan.amSched;
 
 
 
     $scope.tableTitle = "Loan Amortization Table:";
-
 
     $scope.prin = "Starting Principal: $" + displayLoan.principal;
     $scope.interest = "Interest Rate: " + displayLoan.interest + "%";
@@ -219,8 +218,15 @@ angular.module('app', [])
     $scope.totalPay = "Total Payment: $" + displayLoan.totalPay;
     $scope.annPay = "Annual Payments: $" + displayLoan.annPay;
 
-    $scope.monSaved = "Interest Saved: $" + displayLoan["Extra Payment Information"]["Interest Saving"];
-    $scope.monShortened = "Payoff earlier by: " + displayLoan["Extra Payment Information"]["Payoff Earlier By"] + " Months!";
+
+    if(displayLoan.extra === 0 ) {
+      $scope.monSaved = '';
+      $scope.monShortened = '';
+    } else {
+      $scope.monSaved = "Interest Saved: $" + displayLoan["Extra Payment Information"]["Interest Saving"];
+      $scope.monShortened = "Payoff earlier by: " + displayLoan["Extra Payment Information"]["Payoff Earlier By"] + " Months!";
+    }
+
 
   };
 

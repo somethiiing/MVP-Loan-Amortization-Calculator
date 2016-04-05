@@ -18,29 +18,45 @@
         Extra Payment Per Month: <input type="text/submit" ng-model="loan.extra" placeholder="Extra Payment here!"> $ <br />
 
         <input type="button" ng-click="reset()" value="Reset" />
-        <input type="submit" ng-click="calculate(loan)" value="Calculate!" />
-        <input type="button" ng-click="createAmSched(loan)" value="Create Amortization Schedule!" />
+        <input type="submit" ng-click="display(loan)" value="Calculate!" />
       </form>
     <hr>
 
-      <table>
-        <tr ng-repeat="loan in loan">
-          <td>{{ loan.principal }}</td>
-          <td>{{  }}</td>
+      <div> {{ prin }} </div>
+      <div> {{ interest }} </div>
+      <div> {{ term }} </div>
+      <div> {{ extra }} </div>
+      <div> {{ monPay }} </div>
+      <div> {{ totalInt }} </div>
+      <div> {{ totalPay }} </div>
+      <div> {{ annPay }} </div>
+      
+      <br>
+      <br>
+      
+      <div> {{ monSaved }} </div>
+      <div> {{ monShortened }} </div>
+
+    <hr>
+
+
+      <table border="1">
+        <caption>{{ tableTitle }}</caption>
+        <tr ng-repeat="details in displaySched">
+          <td>{{ details["Month"] }}</td>
+          <td>{{ details["Payment Remaining"] }}</td>
+          <td>{{ details["Interest Paid"] }}</td>
+          <td>{{ details["Total Interest Paid"] }}</td>
+          <td>{{ details["Principal Paid"] }}</td>
+          <td>{{ details["Remaining Loan Balance"] }}</td>
+
         </tr>
       </table>
 
 
-
-
     <hr>
-    <pre>
-      <div>
 
-        {{ loan | json }}
-
-      </div>
-    </pre>
+    <div> {{ displayLoan["Extra Payment Information"] | json }} </div>
   </body>
 </html>
 

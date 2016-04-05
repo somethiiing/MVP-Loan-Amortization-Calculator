@@ -44,7 +44,7 @@ var reduce = function (array,callback) {
 //
 //
 
-var displayLoan;
+
 
 
 var loanCalcs = function(loanInfo) {
@@ -115,39 +115,29 @@ var amSchedCreater = function(loanInfo) {
     }
   }
 
+  loanInfo.amSched.unshift({
+    Month: "Month",
+    "Payment Remaining": "Payment Remaining",
+    "Interest Paid": "Interest Paid",
+    "Total Interest Paid": "Total Interest Paid",
+    "Principal Paid": "Principal Paid",
+    "Remaining Loan Balance": "Remaining Loan Balance"
+  });
+
   return loanInfo;
 };
 
 //math for extra monthly payments
 var extraCalcs = function(loanInfo) {
 
-  var totalInterestArray = pluckIntoNumber(loanInfo.amSched,"Interest Paid");
-  var actualInterest = (reduce(totalInterestArray,function(a,b){return a + b;}));
-
+  var actualInterest = loanInfo.amSched[loanInfo.amSched.length - 1]["Total Interest Paid"];
 
   loanInfo["Extra Payment Information"] = {};
-  loanInfo["Extra Payment Information"]["Interest Saving"] = round(totalInt - actualInterest);
+  loanInfo["Extra Payment Information"]["Interest Saving"] = round(loanInfo.totalInt - actualInterest);
   loanInfo["Extra Payment Information"]["Payoff Earlier By"] = round(term - loanInfo.amSched[loanInfo.amSched.length-1]["Month"]);
   
   return loanInfo;
 };
-
-
-
-
-var testInfo = {};
-testInfo.principal = 800000;
-testInfo.interest = 3.75;
-testInfo.term = 60;
-testInfo.extra =  2000;
-
-var testCalculations = loanCalcs(testInfo);
-var testAmSched = amSchedCreater(testInfo);
-
-var testExtra = extraCalcs(testCalculations, testAmSched);
-
-console.log(testCalculations);
-
 
 
 
@@ -161,10 +151,10 @@ angular.module('app', [])
   $scope.amSched =[];
 
   $scope.reset = function () {
-    $scope.loan.principal = '800000';
-    $scope.loan.interest = '3.75';
-    $scope.loan.term = '60';
-    $scope.loan.extra = '2000';
+    $scope.loan.principal = '0';
+    $scope.loan.interest = '0';
+    $scope.loan.term = '0';
+    $scope.loan.extra = '0';
   };
 
   $scope.calculate = function(loanInfo) {
@@ -195,5 +185,44 @@ angular.module('app', [])
     $scope.loan["Extra Payment Information"] = loanInfo["Extra Payment Information"];
 
   };
+
+  $scope.display = function(loanInfo) {
+    if(loanInfo.extra === undefined){
+      extra = 0;
+    }
+
+    var displayLoan = {};
+
+    $scope.calculate(loanInfo);
+    $scope.createAmSched(loanInfo);
+
+    for(var key in loanInfo) {
+      displayLoan[key] = loanInfo[key];
+    }
+
+
+    
+    $scope.displayLoan = displayLoan;
+    $scope.displaySched = displayLoan.amSched;
+
+
+
+    $scope.tableTitle = "Loan Amortization Table:";
+
+
+    $scope.prin = "Starting Principal: $" + displayLoan.principal;
+    $scope.interest = "Interest Rate: " + displayLoan.interest + "%";
+    $scope.term = "Term: " + displayLoan.term + " Months";
+    $scope.extra = "Additional Payments Towards Principal: $" + displayLoan.extra;
+    $scope.monPay = "Monthly Payment: $" + displayLoan.monPay;
+    $scope.totalInt = "Total Interest: $" + displayLoan.totalInt;
+    $scope.totalPay = "Total Payment: $" + displayLoan.totalPay;
+    $scope.annPay = "Annual Payments: $" + displayLoan.annPay;
+
+    $scope.monSaved = "Interest Saved: $" + displayLoan["Extra Payment Information"]["Interest Saving"];
+    $scope.monShortened = "Payoff earlier by: " + displayLoan["Extra Payment Information"]["Payoff Earlier By"] + " Months!";
+
+  };
+
 
 }]);

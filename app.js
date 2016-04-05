@@ -75,9 +75,9 @@ var amSchedCreater = function(loanInfo) {
   totalInt = loanInfo.totalInt;
   annPay = loanInfo.annPay;
 
-  var amSched = [];
+  loanInfo.amSched = [];
   //month 1 has diff calculations
-  amSched.push({
+  loanInfo.amSched.push({
     Month:1,
     "Payment Remaining":principal,
     "Interest Paid": monRate * principal,
@@ -87,44 +87,44 @@ var amSchedCreater = function(loanInfo) {
   });
 
   for(var i = 1; i< term; i++) {
-    if(amSched[i-1]["Remaining Loan Balance"] > 0){
+    if(loanInfo.amSched[i-1]["Remaining Loan Balance"] > 0){
 //the last month
-      if(amSched[i-1]["Remaining Loan Balance"] < monPay + extra){
-        amSched.push({
+      if(loanInfo.amSched[i-1]["Remaining Loan Balance"] < monPay + extra){
+        loanInfo.amSched.push({
           Month: i+1,
-          "Payment Remaining": round(amSched[i-1]["Remaining Loan Balance"]),
-          "Interest Paid": round((amSched[i-1]["Remaining Loan Balance"]) * monRate),
-          "Total Interest Paid": round(((amSched[i-1]["Remaining Loan Balance"]) * monRate)+(amSched[i-1]["Total Interest Paid"])),
-          "Principal Paid": round(amSched[i-1]["Remaining Loan Balance"]),
+          "Payment Remaining": round(loanInfo.amSched[i-1]["Remaining Loan Balance"]),
+          "Interest Paid": round((loanInfo.amSched[i-1]["Remaining Loan Balance"]) * monRate),
+          "Total Interest Paid": round(((loanInfo.amSched[i-1]["Remaining Loan Balance"]) * monRate)+(loanInfo.amSched[i-1]["Total Interest Paid"])),
+          "Principal Paid": round(loanInfo.amSched[i-1]["Remaining Loan Balance"]),
           "Remaining Loan Balance": 0
         });
         break;
       }
 //months 2 through term -1 
-      amSched.push({
+      loanInfo.amSched.push({
         Month: i+1,
-        "Payment Remaining": round(amSched[i-1]["Remaining Loan Balance"]),
-        "Interest Paid": round((amSched[i-1]["Remaining Loan Balance"]) * monRate),
-        "Total Interest Paid": round(((amSched[i-1]["Remaining Loan Balance"]) * monRate) + (amSched[i-1]["Total Interest Paid"])),
-        "Principal Paid": round((monPay - (amSched[i-1]["Remaining Loan Balance"])*monRate) + extra),
-        "Remaining Loan Balance": round((amSched[i-1]["Remaining Loan Balance"])-(monPay - (amSched[i-1]["Remaining Loan Balance"]) * monRate) - extra)
+        "Payment Remaining": round(loanInfo.amSched[i-1]["Remaining Loan Balance"]),
+        "Interest Paid": round((loanInfo.amSched[i-1]["Remaining Loan Balance"]) * monRate),
+        "Total Interest Paid": round(((loanInfo.amSched[i-1]["Remaining Loan Balance"]) * monRate) + (loanInfo.amSched[i-1]["Total Interest Paid"])),
+        "Principal Paid": round((monPay - (loanInfo.amSched[i-1]["Remaining Loan Balance"])*monRate) + extra),
+        "Remaining Loan Balance": round((loanInfo.amSched[i-1]["Remaining Loan Balance"])-(monPay - (loanInfo.amSched[i-1]["Remaining Loan Balance"]) * monRate) - extra)
       });
     }
   }
 
-  return amSched;
+  return loanInfo;
 };
 
 //math for extra monthly payments
-var extraCalcs = function(loanInfo, amSched) {
+var extraCalcs = function(loanInfo) {
 
-  var totalInterestArray = pluckIntoNumber(amSched,"Interest Paid");
+  var totalInterestArray = pluckIntoNumber(loanInfo.amSched,"Interest Paid");
   var actualInterest = (reduce(totalInterestArray,function(a,b){return a + b;}));
 
 
   loanInfo["Extra Payment Information"] = {};
   loanInfo["Extra Payment Information"]["Interest Saving"] = round(totalInt - actualInterest);
-  loanInfo["Extra Payment Information"]["Payoff Earlier By"] = round(term - amSched[amSched.length-1]["Month"]);
+  loanInfo["Extra Payment Information"]["Payoff Earlier By"] = round(term - loanInfo.amSched[loanInfo.amSched.length-1]["Month"]);
   
   return loanInfo;
 };
@@ -155,16 +155,34 @@ console.log(testCalculations);
 angular.module('app', [])
 .controller('loanInfoCtrl', ['$scope', function($scope) {
   $scope.master = {};
+  $scope.amSched =[];
 
-  $scope.update = function(loan){
-    $scope.master = angular.copy(loanInfo);
-  };
   $scope.reset = function () {
-    $scope.loan.principal = '';
-    $scope.loan.interest = '';
-    $scope.loan.term = '';
-    $scope.loan.extra = '0';
+    $scope.loan.principal = '800000';
+    $scope.loan.interest = '3.75';
+    $scope.loan.term = '60';
+    $scope.loan.extra = '2000';
   };
 
+  $scope.calculate = function(loanInfo) {
+
+    for(var prop in loanInfo) {
+      if (typeof loanInfo[prop] === 'string') {
+        loanInfo[prop] = Number(loanInfo[prop]);
+      }
+    }
+
+    var tempLoanValues = loanCalcs(loanInfo);
+    for(var key in tempLoanValues) {
+      $scope.loan[key] = tempLoanValues[key];
+    }
+  };
+
+  $scope.createAmSched = function(loanInfo) {
+
+    amSchedCreater(loanInfo);
+
+    $scope.loan.amSched = loanInfo.amSched;
+  };
 
 }]);

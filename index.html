@@ -21,13 +21,24 @@
         <input type="submit" ng-click="calculate(loan)" value="Calculate!" />
         <input type="button" ng-click="createAmSched(loan)" value="Create Amortization Schedule!" />
       </form>
+    <hr>
+
+      <table>
+        <tr ng-repeat="loan in loan">
+          <td>{{ loan.principal }}</td>
+          <td>{{  }}</td>
+        </tr>
+      </table>
+
+
+
 
     <hr>
     <pre>
       <div>
 
         {{ loan | json }}
-        
+
       </div>
     </pre>
   </body>

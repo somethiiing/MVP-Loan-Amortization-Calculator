@@ -44,6 +44,9 @@ var reduce = function (array,callback) {
 //
 //
 
+var displayLoan;
+
+
 var loanCalcs = function(loanInfo) {
 
 //monRate is the monthly rate (instead of the annual rate)
@@ -165,24 +168,32 @@ angular.module('app', [])
   };
 
   $scope.calculate = function(loanInfo) {
-
+//turn all stringified numbers into numbers
     for(var prop in loanInfo) {
       if (typeof loanInfo[prop] === 'string') {
         loanInfo[prop] = Number(loanInfo[prop]);
       }
     }
-
+//render
     var tempLoanValues = loanCalcs(loanInfo);
     for(var key in tempLoanValues) {
       $scope.loan[key] = tempLoanValues[key];
     }
   };
 
+
+
   $scope.createAmSched = function(loanInfo) {
-
+//create amSched
     amSchedCreater(loanInfo);
-
+//extra payment info, if any
+    if(loanInfo.extra !== 0) {
+      extraCalcs(loanInfo);
+    }
+//render
     $scope.loan.amSched = loanInfo.amSched;
+    $scope.loan["Extra Payment Information"] = loanInfo["Extra Payment Information"];
+
   };
 
 }]);
